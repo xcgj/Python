@@ -115,18 +115,74 @@ print("")
 - Tuple（元组）
 - Dictionary（字典）
 
+##可变类型 不可变类型
 可变类型：列表、字典  
 不可变类型：数字、字符串、元组，用来作为字典的键值  
 内存存储字典数据时，会将键进行hash得到一串数字，然后将值存储到这串数字对应的内存地址中；因此要求字典的键是不可改变的，不然取数据时键发生过改变，会导致取出的值错误
 
+##id() type()
 id(a)查询变量a引用的地址
-
 type(a)确定类型
 ```python
 # python3的input默认将输入变成字符串，int强转
 c = int(input("请输入一个数字："))
 type(c)
 d = str(c) #将整形转成字符串
+```
+
+##数据拷贝 copy
+```python
+#-*- coding:utf-8 -*-
+import copy
+
+# deepcopy 深拷贝
+a = [1,2,3]
+b = a
+c = copy.deepcopy(a)
+print("id(a)=%s, id(b)=%s,id(c)=%s"%(id(a),id(b),id(c)))
+
+# deepcopy 可变数据类型
+d = [a,c]
+e = copy.deepcopy(d)
+a.append(-1)
+print("eepcopy 可变数据类型：id(d)=%s, id(e)=%s"%(id(d),id(e)))
+print(d[0],e[0])
+
+# deepcopy 不可变数据类型
+d = (a,c)
+e = copy.deepcopy(d)
+a.append(-1)
+print("deepcopy 不可变数据类型d：id(d)=%s, id(e)=%s"%(id(d),id(e)))
+print(d[0],e[0])
+
+# copy 可变数据类型，实际进行了深拷贝
+d = [a, c]
+e = copy.copy(d)
+a.append(4)
+print("copy 可变数据类型：id(d)=%s, id(e)=%s"%(id(d),id(e)))
+print(d[0],e[0])
+
+# copy 不可变数据类型，实际进行了浅拷贝
+d = (a, c)
+e = copy.copy(d)
+c.append(0)
+print("copy 不可变数据类型：id(d)=%s, id(e)=%s"%(id(d),id(e)))
+print(d[0],e[0])
+
+"""
+id(a)=60198792, id(b)=60198792,id(c)=65399112
+eepcopy 可变数据类型：id(d)=60893000, id(e)=60891528
+([1, 2, 3, -1], [1, 2, 3])
+deepcopy 不可变数据类型d：id(d)=60116552, id(e)=65356104
+([1, 2, 3, -1, -1], [1, 2, 3, -1])
+copy 可变数据类型：id(d)=60891528, id(e)=65396552
+([1, 2, 3, -1, -1, 4], [1, 2, 3, -1, -1, 4])
+copy 不可变数据类型：id(d)=65356104, id(e)=65356104
+([1, 2, 3, -1, -1, 4], [1, 2, 3, -1, -1, 4])
+"""
+# 总结
+# copy模块的deepcopy总是对数据进行深拷贝
+# copy模块的copy会根据当前拷贝的数据类型有不同的处理方式，可变类型是深拷贝，不可变类型是浅拷贝
 ```
 
 # if-else
@@ -177,6 +233,7 @@ true
 ```
 
 # 运算符
+## 普通运算符
 ```python
 a = 5
 b = 2
@@ -189,7 +246,9 @@ c = "AB" * a # 重复字符串
 print(c) # ABABABABAB
 
 a <> b # 不等于，建议使用 !=
-
+```
+## 逻辑运算符
+```python
 # python 中的and从左到右计算表达式，若所有值均为真，则返回最后一个值，若存在假，返回第一个假值。
 # or也是从左到有计算表达式，返回第一个为真的值。
 >>> "a" and 'b'
@@ -198,8 +257,9 @@ a <> b # 不等于，建议使用 !=
 ''
 >>> "" and 'b' or "c"
 'c'
-
-# 三目运算符
+```
+## 三目运算符
+```python
 ## 铺垫1
 >>> d = []
 >>> d
@@ -224,7 +284,21 @@ a <> b # 不等于，建议使用 !=
 >>> (a>b and [a] or [b])[0]
 200
 ```
-
+## 进制转化
+![](进制转换.png)
+```python
+#coding=utf-8
+a = 100
+b = 0100    #八进制
+c = "0x100"   #十六进制
+d = 0b100   #二进制
+print(bin(a), oct(a), hex(a))
+print(int(b), int(c, 16), int(d))# 如果第一个参数是字符串，int()第二个参数表示的是第一个参数是哪种进制类型
+"""
+('0b1100100', '0144', '0x64')
+(64, 256, 4)
+"""
+```
 
 # while
 python 没有do while  
