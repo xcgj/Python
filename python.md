@@ -1,65 +1,7 @@
-
-<!-- toc orderedList:0 depthFrom:1 depthTo:6 -->
-
-* [注释](#注释)
-* [intput()和print()](#intput和print)
-    * [注意点：](#注意点)
-* [变量类型](#变量类型)
-* [if-else](#if-else)
-* [运算符](#运算符)
-* [while](#while)
-* [for](#for)
-* [字符串](#字符串)
-* [列表](#列表)
-* [字典](#字典)
-* [元组](#元组)
-* [集合](#集合)
-* [函数](#函数)
-* [局部变量和全局变量](#局部变量和全局变量)
-* [help()的使用](#help的使用)
-* [文件](#文件)
-* [类和对象](#类和对象)
-* [继承](#继承)
-* [多态](#多态)
-* [私有化](#私有化)
-* [property属性](#property属性)
-* [异常](#异常)
-* [模块](#模块)
-* [`__name__`](#__name__)
-* [`__all__`](#__all__)
-* [包](#包)
-    * [包的制作](#包的制作)
-    * [包的发布和安装](#包的发布和安装)
-* [程序传参](#程序传参)
-* [列表生成表达式](#列表生成表达式)
-* [生成器](#生成器)
-* [迭代器](#迭代器)
-* [闭包](#闭包)
-* [装饰器](#装饰器)
-* [LEGB规则](#legb规则)
-* [type](#type)
-* [`__slots__`](#__slots__)
-* [数据库操作](#数据库操作)
-* [网络通信](#网络通信)
-* [爬虫](#爬虫)
-
-<!-- tocstop -->
-
-
-
-
-```python
-#coding=utf-8
-```
-- 第一行加的声明是为了让 python版本2识别中文
-- 也可以将其替换成python推荐的声明:  
-
-```python    
-#-*- coding:utf-8 -*-
-```
-
+[TOC]
 
 # 注释
+## 注释方式
 ```python
 print("xcgj")
 #行注释
@@ -73,7 +15,16 @@ asd asd
 a="xcgj"
 print(a)
 ```
+## 注释编码声明
+```python
+#coding=utf-8
+```
+- 第一行加的声明是为了让 python版本2识别中文
+- 也可以将其替换成python推荐的声明:  
 
+```python    
+#-*- coding:utf-8 -*-
+```
 
 # intput()和print()
 ```python
@@ -115,12 +66,12 @@ print("")
 - Tuple（元组）
 - Dictionary（字典）
 
-##可变类型 不可变类型
+## 可变类型 不可变类型
 可变类型：列表、字典  
 不可变类型：数字、字符串、元组，用来作为字典的键值  
 内存存储字典数据时，会将键进行hash得到一串数字，然后将值存储到这串数字对应的内存地址中；因此要求字典的键是不可改变的，不然取数据时键发生过改变，会导致取出的值错误
 
-##id() type()
+## id() type()
 id(a)查询变量a引用的地址
 type(a)确定类型
 ```python
@@ -130,7 +81,7 @@ type(c)
 d = str(c) #将整形转成字符串
 ```
 
-##数据拷贝 copy
+## 数据拷贝 copy
 ```python
 #-*- coding:utf-8 -*-
 import copy
@@ -927,6 +878,7 @@ for cur_name in files:
 
 
 # 类和对象
+## 属性和方法
 ```python
 # 定义类  
 class Clazz:
@@ -990,9 +942,9 @@ class Clazz(object):
     print("静态方法")
 
 
-a=Clazz()
-b=Clazz()
-c=Clazz()
+a = Clazz(11)
+b = Clazz("22")
+c = Clazz("33")
 
 Clazz.add_num() #通过类的名字调用类方法
 a.add_num()     #通过类创建的对象调用类方法
@@ -1000,6 +952,20 @@ a.add_num()     #通过类创建的对象调用类方法
 Clazz.printInf() #通过类的名字调用静态方法
 a.printInf() #通过类创建的对象调用静态方法
 ```
+
+## 私有化
+|命名格式|使用规则|
+|---|---|
+|```xx```|公有变量|
+|```_xx```|私有属性或方法，用```from somemodule import *```的方式不会导入这些属性或方法，用```import somemodule```的方式可以用对象访问这些属性或方法。可以用类对象和子类访问这些属性或方法|
+|```__xx```|避免与子类中的属性命名冲突，无法在外部直接访问，因为有名字重整|
+|```__xx__```|用户名字控件的魔法对象或属性，不可自定义这样的名字|
+|```xx_```|用于避免与python关键词的冲突|
+
+名字重整：防止子类意外重写基类的方法或属性，私有属性不能直接访问，是因为被改名字了，可以通过` _类名__属性名 `访问。访问```__xx```，如 _Class__xx
+- 注意：私有属性仅被` from somemodule import * `限制，如果` import somemodule `,可以 somemodule.私有属性 访问
+![](模块部分导入访问私有变量.png)
+![](模块整体导入访问私有变量.png)
 ```python
 #私有属性，出现在类的函数中 self.变量名
 class Class:
@@ -1030,6 +996,18 @@ a = Class()
 a.setAge(30)
 a.getAge()
 ```
+## 元类
+## 对象的引用计数
+```python
+#计算对象的引用计数
+import sys
+sys.getrefcount(a) #a是对象名
+'''
+测量结果会比实际引用计数大1，原因：
+sys调用getrefcount()方法时，方法形参获取了实参a的引用
+多出来的一个引用数量其实是属于形参的
+'''
+```
 ```python
 # __del__ 删除的方法--析构函数
 class Class:
@@ -1045,18 +1023,10 @@ del b       #a引用的对象的引用计数为0，b对象自动调用__del__(se
 print("程序结束")
 #c引用的对象的引用计数为0，c对象自动调用__del__(self)
 ```
-```python
-#计算对象的引用计数
-import sys
-sys.getrefcount(a) #a是对象名
-'''
-测量结果会比实际引用计数大1，原因：
-sys调用getrefcount()方法时，方法形参获取了实参a的引用
-多出来的一个引用数量其实是属于形参的
-'''
-```
+
+## 对象创建的流程
 在python中，对象的创造和初始化是在2个函数中进行的
-- `__new__`(cls)方法用来创建一个类的对象，用一个匿名变量来接收`__new__`(cls)的返回值，这个返回值是新创建的对象的引用
+- `__new__`(cls)方法用来创建一个类的对象，用一个 匿名变量 来接收`__new__`(cls)的返回值，这个返回值是新创建的对象的引用
 - `__init__`(self)，匿名对象传入形参self，self引用了`__new__`(cls)的返回值，对新的对象进行初始化操作
 - `__init__`(self)返回对象的引用给变量
 ```python
@@ -1075,6 +1045,8 @@ class Clazz(object):
 
 obj=Clazz();
 ```
+
+### 创建单例
 ```python
 # 单例
 # 利用类属性和__new__(cls)方法实现单例
@@ -1113,6 +1085,48 @@ print(id(a),a.name) #a.name变成了B--单例的引用特性
 print(id(b),b.name)
 ```
 
+## property属性
+设置property属性可以设置set方法和get方法
+- 方法一
+```python
+class Money(object):
+  def __init__(self):
+    self.__money = 0
+  def getMoney(self):
+    return self.__money
+  def setMoney(self, value):
+    if isinstance(value, int):
+      self.__money = value
+    else:
+      print("error:不是整型数字")
+
+  money = property(getMoney, setMoney)
+
+test = Money()
+test.money = 100
+print(test.money)
+```
+- 方法二
+```python
+class Money(object):
+  def __init__(self):
+    self.__money = 0
+
+  @property     #get方法
+  def money(self):
+    return self.__money
+
+  @money.setter #set方法
+  def money(self, value):
+    if isinstance(value, int):
+      self.__money = value
+    else:
+      print("error:不是整型数字")
+
+test = Money()
+test.money = 200
+print(test.money)
+```
 
 #  继承
 子类的类名后面加上小括号，括号里带上父类的类名
@@ -1200,62 +1214,6 @@ A
 >>> printObject(b)
 B
 ```
-
-# 私有化
-```
-xx: 公有变量
-_x: 单前置下划线,私有化属性或方法， from somemodule import *禁止导入,类对象和子类可以访问
-__xx： 双前置下划线,避免与子类中的属性命名冲突，无法在外部直接访问(名字重整所以访问不到)
-__xx__:双前后下划线,用户名字空间的魔法对象或属性。
-xx_:单后置下划线,用于避免与Python关键词的冲突
-```
-名字重整：私有属性不能直接访问，是因为被改名字了，可以通过` _类名__属性名 `访问
-- 注意：私有属性仅被` from somemodule import * `限制，如果` import somemodule `,可以 somemodule.私有属性 访问
-
-
-# property属性
-设置property属性可以设置set方法和get方法
-- 方法一
-```python
-class Money(object):
-  def __init__(self):
-    self.__money = 0
-  def getMoney(self):
-    return self.__money
-  def setMoney(self, value):
-    if isinstance(value, int):
-      self.__money = value
-    else:
-      print("error:不是整型数字")
-
-  money = property(getMoney, setMoney)
-
-test = Money()
-test.money = 100
-print(test.money)
-```
-- 方法二
-```python
-class Money(object):
-  def __init__(self):
-    self.__money = 0
-
-  @property     #get方法
-  def money(self):
-    return self.__money
-
-  @money.setter #set方法
-  def money(self, value):
-    if isinstance(value, int):
-      self.__money = value
-    else:
-      print("error:不是整型数字")
-
-test = Money()
-test.money = 200
-print(test.money)
-```
-
 
 # 异常
 用来捕获异常，不把异常传递给系统，防止程序崩
