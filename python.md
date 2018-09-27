@@ -5,43 +5,49 @@
     * [注释编码声明](#注释编码声明)
 * [intput()和print()](#intput和print)
     * [注意点：](#注意点)
-* [变量类型](#变量类型)
+* [变量](#变量)
     * [可变类型和不可变类型](#可变类型和不可变类型)
     * [id()和type()](#id()和type())
     * [数据拷贝copy](#数据拷贝copy)
-* [if-else](#if-else)
+    * [字符串](#字符串)
+    * [列表](#列表)
+    * [字典](#字典)
+    * [元组](#元组)
+    * [集合](#集合)
+* [条件语句](#条件语句)
+    * [if-else](#if-else)
+    * [while](#while)
+    * [for](#for)
 * [运算符](#运算符)
     * [普通运算符](#普通运算符)
     * [逻辑运算符](#逻辑运算符)
     * [三目运算符](#三目运算符)
     * [进制转化](#进制转化)
-* [while](#while)
-* [for](#for)
-* [字符串](#字符串)
-* [列表](#列表)
-* [字典](#字典)
-* [元组](#元组)
-* [集合](#集合)
 * [函数](#函数)
-* [局部变量和全局变量](#局部变量和全局变量)
-* [help()的使用](#help的使用)
+    * [局部变量和全局变量](#局部变量和全局变量)
+    * [LEGB规则](#LEGB规则)
+    * [help()的使用](#help的使用)
 * [文件](#文件)
 * [类和对象](#类和对象)
     * [属性和方法](#属性和方法)
+    * [动态增加类的方法](#动态增加类的方法)
+    * [`__slots__`限制类实例能添加的属性](#__slots__限制类实例能添加的属性)
     * [私有化](#私有化)
-    * [元类](#元类)
     * [对象的引用计数](#对象的引用计数)
     * [对象创建的流程](#对象创建的流程)
         * [创建单例](#创建单例)
     * [property属性](#property属性)
+* [元类](#元类)
+    * [类也是对象](#类也是对象)
+    * [动态创建类](#动态创建类)
+    * [type就是个元类](#type就是个元类)
+    * [`__metaclass__`](#__metaclass__)
 * [继承](#继承)
 * [多态](#多态)
-* [私有化](#私有化)
-* [property属性](#property属性)
 * [异常](#异常)
 * [模块](#模块)
-* [`__name__`](#__name__)
-* [`__all__`](#__all__)
+    * [`__name__`](#__name__)
+    * [`__all__`](#__all__)
 * [包](#包)
     * [包的制作](#包的制作)
     * [包的发布和安装](#包的发布和安装)
@@ -51,9 +57,7 @@
 * [迭代器](#迭代器)
 * [闭包](#闭包)
 * [装饰器](#装饰器)
-* [LEGB规则](#legb规则)
-* [type](#type)
-* [`__slots__`](#__slots__)
+* [垃圾回收机制](#垃圾回收机制)
 * [数据库操作](#数据库操作)
 * [网络通信](#网络通信)
 * [爬虫](#爬虫)
@@ -120,7 +124,7 @@ print("*", end="")
 print("")
 ```  
 
-# 变量类型
+# 变量
 - 数字（int long float complex）  
 - 布尔  
 - String：python的字符串一般不考虑\0，因此"ABC"占用的是3个字节的内存
@@ -198,156 +202,7 @@ copy 不可变数据类型：id(d)=65356104, id(e)=65356104
 # copy模块的copy会根据当前拷贝的数据类型有不同的处理方式，可变类型是深拷贝，不可变类型是浅拷贝
 ```
 
-# if-else
-python 没有switch  
-
-```python
-if 条件:
-  print(a)
-  print(c)
-elif 条件:
-  pass
-else :
-  print(e)
-print(f)
-```
-pass的作用是告诉编译器这里有代码，以后会补全，先别报错  
-
-注意点：
-- 不要忘了冒号
-- 注意缩进
-
-```python
-# if的真假判断
->>> if True:
-	     print("true")
-
-true
->>> if False:
-	     print("true")
-
->>> if "":
-	     print("true")
-
->>> if None:
-	     print("true")
-
->>> if 0:
-	     print("true")
-
->>> if ():
-	     print("true")
-
->>> if []:
-	     print("true")
-
->>> if {}:
-	     print("true")
-```
-
-# 运算符
-## 普通运算符
-```python
-a = 5
-b = 2
-
-c = a//b #取商
-
-c = a**b #a的b次方--幂
-
-c = "AB" * a # 重复字符串
-print(c) # ABABABABAB
-
-a <> b # 不等于，建议使用 !=
-```
-## 逻辑运算符
-```python
-# python 中的and从左到右计算表达式，若所有值均为真，则返回最后一个值，若存在假，返回第一个假值。
-# or也是从左到有计算表达式，返回第一个为真的值。
->>> "a" and 'b'
-'b'
->>> "" and 'b'
-''
->>> "" and 'b' or "c"
-'c'
-```
-## 三目运算符
-```python
-## 铺垫1
->>> d = []
->>> d
-[]
->>> d = [1]
->>> d[0]
-1
-## 铺垫2
->>> a = 100
->>> b = 200
->>> a<b and a or b
-100
->>> a>b and a or b
-200
-# 出问题
->>> a = 0
->>> a<b and a or b
-200     # 遇到0，解析器认为是False，结果选择了or运算，输出错误
-# 解决方法--使用列表输出
->>> (a<b and [a] or [b])[0]
-0
->>> (a>b and [a] or [b])[0]
-200
-```
-## 进制转化
-![](进制转换.png)
-```python
-#coding=utf-8
-a = 100
-b = 0100    #八进制
-c = "0x100"   #十六进制
-d = 0b100   #二进制
-print(bin(a), oct(a), hex(a))
-print(int(b), int(c, 16), int(d))# 如果第一个参数是字符串，int()第二个参数表示的是第一个参数是哪种进制类型
-"""
-('0b1100100', '0144', '0x64')
-(64, 256, 4)
-"""
-```
-
-# while
-python 没有do while  
-
-```python3
-while 条件:
-  print(a)
-  print(b)
-print(c)
-```
-注意点：
-- 不要忘了冒号
-- 注意缩进  
-
-# for
-```python
-str = "ABCD"
-#依此打印出字符串中的每个字符,\0除外
-for temp in str
-  print(temp)
-```
-python语法for循环和else联用
-```python
-lst = [1,2,3]
-# lst = []
-for tmp in List:
-  print(tmp)
-  #break
-else:
-  print("test")
-# 不管lst表是不是空，else语句都会被打印
-# 如果for语句中有break，那么else语句不会打印
-```
-break
-
-# 字符串
+## 字符串
 
 ```python
 mystr = "abcdefgh abcdefgh"
@@ -469,7 +324,7 @@ d = c.join(b) # 'aaa==bbb==ccc'
 ```
 
 
-# 列表
+## 列表
 可以同时存储多种不同类型的数据  
 
 ```python
@@ -515,7 +370,7 @@ else:
 求列表元素的个数
 
 
-# 字典  
+## 字典  
 
 ```python
 a = {"name":"aaa", "b": 1}
@@ -615,7 +470,7 @@ reverse=True：从大到小排序
 ```
 
 
-# 元组
+## 元组
 
 ```python
 #创建单个元素的元组
@@ -625,13 +480,12 @@ reverse=True：从大到小排序
 >>>
 ```
 
-# 集合
+## 集合
 集合内没有相同的数据，用来去重
 ```python
 >>> c = {1,2,3,4,5,2,3,4,5,6}
 >>> c
 {1, 2, 3, 4, 5, 6}
-
 
 >>> a = [1,2,3,4,5,6,7,2,3,4]
 >>> b = set(a)
@@ -642,6 +496,154 @@ reverse=True：从大到小排序
 [1, 2, 3, 4, 5, 6, 7]
 ```
 
+# 条件语句
+## if-else
+python 没有switch  
+
+```python
+if 条件:
+  print(a)
+  print(c)
+elif 条件:
+  pass
+else :
+  print(e)
+print(f)
+```
+pass的作用是告诉编译器这里有代码，以后会补全，先别报错  
+
+注意点：
+- 不要忘了冒号
+- 注意缩进
+
+```python
+# if的真假判断
+>>> if True:
+	     print("true")
+
+true
+>>> if False:
+	     print("true")
+
+>>> if "":
+	     print("true")
+
+>>> if None:
+	     print("true")
+
+>>> if 0:
+	     print("true")
+
+>>> if ():
+	     print("true")
+
+>>> if []:
+	     print("true")
+
+>>> if {}:
+	     print("true")
+```
+
+## while
+python 没有do while  
+
+```python3
+while 条件:
+  print(a)
+  print(b)
+print(c)
+```
+注意点：
+- 不要忘了冒号
+- 注意缩进  
+
+## for
+```python
+str = "ABCD"
+#依此打印出字符串中的每个字符,\0除外
+for temp in str
+  print(temp)
+```
+python语法for循环和else联用
+```python
+lst = [1,2,3]
+# lst = []
+for tmp in List:
+  print(tmp)
+  #break
+else:
+  print("test")
+# 不管lst表是不是空，else语句都会被打印
+# 如果for语句中有break，那么else语句不会打印
+```
+
+# 运算符
+## 普通运算符
+```python
+a = 5
+b = 2
+
+c = a//b #取商
+
+c = a**b #a的b次方--幂
+
+c = "AB" * a # 重复字符串
+print(c) # ABABABABAB
+
+a <> b # 不等于，建议使用 !=
+```
+## 逻辑运算符
+```python
+# python 中的and从左到右计算表达式，若所有值均为真，则返回最后一个值，若存在假，返回第一个假值。
+# or也是从左到有计算表达式，返回第一个为真的值。
+>>> "a" and 'b'
+'b'
+>>> "" and 'b'
+''
+>>> "" and 'b' or "c"
+'c'
+```
+## 三目运算符
+```python
+## 铺垫1
+>>> d = []
+>>> d
+[]
+>>> d = [1]
+>>> d[0]
+1
+## 铺垫2
+>>> a = 100
+>>> b = 200
+>>> a<b and a or b
+100
+>>> a>b and a or b
+200
+# 出问题
+>>> a = 0
+>>> a<b and a or b
+200     # 遇到0，解析器认为是False，结果选择了or运算，输出错误
+# 解决方法--使用列表输出
+>>> (a<b and [a] or [b])[0]
+0
+>>> (a>b and [a] or [b])[0]
+200
+```
+## 进制转化
+![](进制转换.png)
+```python
+#coding=utf-8
+a = 100
+b = 0100    #八进制
+c = "0x100"   #十六进制
+d = 0b100   #二进制
+print(bin(a), oct(a), hex(a))
+print(int(b), int(c, 16), int(d))# 如果第一个参数是字符串，int()第二个参数表示的是第一个参数是哪种进制类型
+"""
+('0b1100100', '0144', '0x64')
+(64, 256, 4)
+"""
+```
 
 # 函数
 - 普通函数的封装  
@@ -788,7 +790,7 @@ print(num)
 ```
 
 
-# 局部变量和全局变量
+## 局部变量和全局变量
 全局变量放在函数被调用之前，命名规范：g_变量名  
 
 ```python
@@ -843,8 +845,13 @@ print(lst2)  # [200]      # num=num+num不会影响本体
 '''
 ```
 
+## LEGB规则
+变量查找顺序：局部-闭包-全局-内建
+locals -> enclosing function -> globals -> builtins
+`dir(__builtin__)`查看内建变量
 
-# help()的使用
+
+## help()的使用
 退出help界面使用 q
 - 可以用来查看变量说明及系统函数说明
 
@@ -1015,17 +1022,132 @@ Clazz.printInf() #通过类的名字调用静态方法
 a.printInf() #通过类创建的对象调用静态方法
 ```
 
+## 动态增加类的方法
+- MethodType方法动态添加
+```python
+>>> class Test(object):
+	def Method(self):
+		print("---Method---")
+		return 1
+
+
+>>> def NewMethod(self):    # 注意需要有一个参数用来传递类对象
+	print("---NewMethod---")
+	return 2
+
+
+>>> import types
+>>> test = Test()
+>>> test.method2 = types.MethodType(NewMethod, test)
+>>> test.Method()
+---Method---
+1
+>>> test.method2()
+---NewMethod---
+2
+>>> fun = types.MethodType(NewMethod, test)
+>>> fun()
+---NewMethod---
+2
+```
+- MethodType方法多参数传参
+```python
+>>> def NewMethod(self, param):
+	print("---NewMethod-%s--"%param)
+	return 2
+
+>>> test.method3 = types.MethodType(NewMethod, test)
+>>> test.method3("111")
+---NewMethod-111--
+2
+```
+
+- 静态方法和类方法
+```python
+import types
+
+class Clazz:
+  def __init__(self, name):
+    self.name = name
+
+def talk(self):
+  print("%slisten"%self.name)
+
+@staticmethod     #静态方法
+def look():
+  print("look")
+
+@classmethod      #类方法
+def eat(cls):
+  print("eateat")
+
+
+>>> obj = Clazz("obj")
+>>> obj.talk = types.MethodType(talk, obj) # 对象和函数绑定，添加方法
+>>> obj.talk()
+objlisten
+>>> ccc = types.MethodType(talk, obj)     # 函数引用
+>>> ccc()
+objlisten
+>>> Clazz.lo = look
+>>> Clazz.lo()
+look
+>>> Clazz.e = eat
+>>> Clazz.e()
+eateat
+```
+```python
+class A:
+    a = 2
+    b = 5
+    c = 9
+    __d = 11
+
+    def __init__(self):
+        print self.a
+    def norma(self):
+        print self.b
+    @classmethod
+    def clsmd(cls):
+        print cls.c
+    @staticmethod
+    def sttmd():
+        print "static"
+
+x = A()
+x.norma()
+x.clsmd()
+x.sttmd()
+```
+
+## `__slots__`限制类实例能添加的属性
+限制类实例能添加的属性
+```python
+class Clazz(object):
+  __slots__ = ("name", "age") # 只能创建name和age两个属性
+
+>>> a = Clazz()
+>>> a.name = "aa"
+>>> a.age = 10
+>>> a.a = 11
+Traceback (most recent call last):
+  File "<pyshell#39>", line 1, in <module>
+    a.a = 11
+AttributeError: 'Clazz' object has no attribute 'a'
+```
+>注意：`__slots__`定义的属性只对当前类实例起作用，对继承的子类无效
+
 ## 私有化
 |命名格式|使用规则|
 |---|---|
-|```xx```|公有变量|
-|```_xx```|私有属性或方法，用```from somemodule import *```的方式不会导入这些属性或方法，用```import somemodule```的方式可以用对象访问这些属性或方法。可以用类对象和子类访问这些属性或方法|
-|```__xx```|避免与子类中的属性命名冲突，无法在外部直接访问，因为有名字重整|
-|```__xx__```|用户名字控件的魔法对象或属性，不可自定义这样的名字|
-|```xx_```|用于避免与python关键词的冲突|
+|`xx`|公有变量|
+|`_xx`|私有属性或方法，用`from somemodule import *`的方式不会导入这些属性或方法，用`import somemodule`的方式可以用对象访问这些属性或方法。可以用类对象和子类访问这些属性或方法|
+|`__xx`|避免与子类中的属性命名冲突，无法在外部直接访问，因为有名字重整|
+|`__xx__`|用户名字控件的魔法对象或属性，不可自定义这样的名字|
+|`xx_`|用于避免与python关键词的冲突|
 
-名字重整：防止子类意外重写基类的方法或属性，私有属性不能直接访问，是因为被改名字了，可以通过` _类名__属性名 `访问。访问```__xx```，如 _Class__xx
-- 注意：私有属性仅被` from somemodule import * `限制，如果` import somemodule `,可以 somemodule.私有属性 访问
+名字重整：防止子类意外重写基类的方法或属性，私有属性不能直接访问，是因为被改名字了，可以通过` _类名__属性名 `访问。访问`__xx`，如 `_Class__xx`
+- 注意：私有属性仅被` from somemodule import * `限制，如果` import somemodule `,可以 `somemodule.私有属性` 访问
 ![](模块部分导入访问私有变量.png)
 ![](模块整体导入访问私有变量.png)
 ```python
@@ -1058,7 +1180,6 @@ a = Class()
 a.setAge(30)
 a.getAge()
 ```
-## 元类
 ## 对象的引用计数
 ```python
 #计算对象的引用计数
@@ -1189,6 +1310,152 @@ test = Money()
 test.money = 200
 print(test.money)
 ```
+
+# 元类
+## 类也是对象
+类拥有创建实例对象的能力，但类的本质也是对象，可以被赋值拷贝、增加属性、作为函数参数传递
+```python
+>>> def fun(param):
+	   print(param)
+
+>>> class Clazz():
+	   pass
+
+>>> Clazz
+<class '__main__.Clazz'>
+>>> fun(Clazz)              #类作为函数参数
+<class '__main__.Clazz'>
+>>> Clazz.attr = "增加属性"  #增加类属性
+>>> hasattr(Clazz, 'attr')
+True
+>>> Clazz.attr
+'增加属性'
+>>> clazz = Clazz           #类被拷贝
+>>> clazz
+<class '__main__.Clazz'>
+>>> clazz.attr
+'增加属性'
+>>>
+>>> id(Clazz)
+2851755114600
+>>> id(clazz)
+2851755114600
+```
+## 动态创建类
+- 在函数中创建类
+```python
+>>> def ClazzCreater():
+    	class newClass():
+    		def __str__(self):
+    			return "在函数中创建的类"
+    	return newClass    # 返回的是类
+
+>>> Clazz = ClazzCreater() # 获得newClass类的引用
+>>> Clazz
+<class '__main__.ClazzCreater.<locals>.newClass'>
+>>> instance = Clazz()     # 用这个类创建一个实例
+>>> instance
+<__main__.ClazzCreater.<locals>.newClass object at 0x00000297FA132320>
+>>> print(instance)
+在函数中创建的类
+```
+- 使用type创建类
+```python
+>>> type("字符串")
+<class 'str'>
+>>> type(Clazz)     # 类的类型是type
+<class 'type'>
+>>> type(instance)  # 实例的类型是这个newClass类
+<class '__main__.ClazzCreater.<locals>.newClass'>
+```
+type(类名,由⽗类名称组成的元组(针对继承的情况,可以为空),包含属性的字典(名称和值))
+```python
+>>> Clazz = type("Class",(),{})     # 类名Class，无继承，无属性，Clazz这个变量是Class这个类的引用，注意区分
+>>> Clazz
+<class '__main__.Class'>
+>>> clazz = Clazz()
+>>> clazz
+<__main__.Class object at 0x00000297FA1ADD30>
+```
+添加属性
+```python
+>>> Clazz = type("Class", (), {"name":"xcgj"})
+>>> Clazz.name
+'xcgj'
+>>> clazz = Clazz()
+>>> clazz.name
+'xcgj'
+>>> ChildClazz1 = type("ChildClass1", (Clazz,), {"age": 10})
+>>> ChildClazz1.age
+10
+>>> ChildClazz2 = type("ChildClass2", (Class,), {"age": 20})
+Traceback (most recent call last):
+  File "<pyshell#60>", line 1, in <module>
+    ChildClazz2 = type("ChildClass2", (Class,), {"age": 20})
+NameError: name 'Class' is not defined
+```
+> 注意：
+只能用已有的类的引用来继承创建子类
+父类的名字不是字符串
+添加的属性是类属性，并不是实例属性
+
+ 添加方法
+ ```python
+ >>> def instanceFunc(self):
+     	print("实例方法")
+     	return self.attr
+
+ >>> @classmethod
+     def classFunc(cls):
+     	print("类方法")
+     	return cls.attr
+
+ >>> @staticmethod
+     def staticFunc():
+     	print("静态方法")
+
+>>> Clazz = type("Clazz",(),{"attr":100, "instanceFunc":instanceFunc, "classFunc":classFunc, "staticFunc":staticFunc})
+>>> clazz = Clazz()
+>>> clazz.classFunc()
+类方法
+100
+>>> clazz.attr = 200        # 添加实例属性做参照
+>>> clazz.instanceFunc()
+实例方法
+200
+>>> clazz.classFunc()
+类方法
+100
+>>> clazz.staticFunc()
+静态方法
+ ```
+## type就是个元类
+实例对象是由类产生的，而类就是由元类产生的。`type('ClassName', (), {})`可以产生一个类，所以type就是个元类
+Python中所有的东⻄都是对象，这包括整数、 字符串、 函数以及类，它们都是从type创建⽽来，可以通过检查`__class__`属性来看到这⼀点
+```python
+>>> name = "xcgj"           # 字符串
+>>> name.__class__
+<class 'str'>
+>>> name.__class__.__class__
+<class 'type'>
+>>> integer = 1             # 整数
+>>> integer.__class__
+<class 'int'>
+>>> integer.__class__.__class__
+<class 'type'>
+>>> def foo(): pass         # 函数
+>>> foo.__class__
+<class 'function'>
+>>> foo.__class__.__class__
+<class 'type'>
+>>> class Clazz(object): pass   # 类
+>>> Clazz.__class__
+<class 'type'>
+>>> Clazz.__class__.__class__
+<class 'type'>
+```
+
+## `__metaclass__`
 
 #  继承
 子类的类名后面加上小括号，括号里带上父类的类名
@@ -1347,7 +1614,7 @@ import random #导入模块
 a = random.randint(0, 2)
 ```
 
-# `__name__`
+## `__name__`
 `__name__`通常放在模块内，  
 当模块自己用python解析器运行时，打印出来的字符串是`__main__`  
 当模块被导入其他文件并运行时，打印出来的字符串是`__自己的模块名__`  
@@ -1392,7 +1659,7 @@ if __name__ == "__main__":
   main()
 ```
 
-# `__all__`  
+## `__all__`  
 ```
 当别的文件以 from myModul import * 的方式导入模块时，模块限定了*的内容只能是__all__这个列表所包含的函数或变量
 ```
@@ -1612,7 +1879,7 @@ sys.argv[3]
 
 # 列表生成表达式
 - range
-python2中才会讲数据遍历展示，python3为了规避风险，不展示数据
+python2中才会将数据遍历展示，python3为了规避风险，不展示数据
 ```python2
 >>> range(10)
 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -1643,12 +1910,12 @@ range(10, 18)
 ```
 
 # 生成器
-生成器保存上一次计算结果，并保存算法
+生成器(generator)保存上一次计算结果，并保存算法
 可以通过` next(生成器) `,` 生成器.__next__() `, ` for `， ` 生成器.send() `获得生成器的下一个返回值，前两种方法是等价的
 一次循环执行完毕后才会打印yield后面的变量值
 
 - 列表生成器
-只需要讲列表生成表达式的[]改成()，就能得到一个生成器
+只需要将列表生成表达式的[]改成()，就能得到一个生成器
 ```python
 a = (3*x for x in range(10))
 next(a)
@@ -1734,8 +2001,8 @@ while True:
 
 # 迭代器
 可以被迭代的对象： list 、 tuple 、 dict 、 set 、 str 、生成器
-- 迭代对象
-使用 isinstance() 判断一个对象是否是 Iterable 对象的一个实例，可以被迭代
+- 可迭代对象
+使用 isinstance() 判断一个对象是否是可迭代的(Iterable)
 ```python
 >>> from collections import Iterable
 >>> isinstance([], Iterable)
@@ -1744,7 +2011,7 @@ True
 False
 ```
 - 迭代器
-使用 isinstance() 判断一个对象是否是 Iterator 对象的一个实例，是迭代器
+使用 isinstance() 判断一个对象是否是迭代器(Iterator)
 ```python
 >>> from collections import Iterator
 >>> isinstance((x for x in range(10)), Iterator)
@@ -1767,7 +2034,7 @@ False
 
 
 #  闭包
-在函数A中定义了另一个函数B，并且函数B用到了函数A的变量，函数A不能退出
+在函数A中定义了另一个函数B，并且函数B用到了函数A的变量，函数A不能退出。函数B成为闭包。
 ```python
 def out(num1):
   def inn(num2):
@@ -1784,7 +2051,27 @@ def out(num1):
 test和inn指向同一个函数引用，函数inn每次都会从out函数取值
 '''
 ```
+```python
+def outer(number):
+    print("--1--")
+    def inner(num):
+        print("--2--")
+        print(num + number)
+    print("--3--")
+    return inner
 
+ret = outer(200)
+print("="*10)
+ret(300)
+
+"""
+--1--
+--3--
+==========
+--2--
+500
+"""
+```
 
 # 装饰器
 闭包参数中传入外部函数名，并返回修饰后的外部函数
@@ -1837,6 +2124,7 @@ def makeItalic(fn):
     return "<i>" + fn() + "</i>"
   return wrapped
 
+# 只要python解释器执行到了下面这行代码，就会自动进行装饰，而不是等到调用的时候才装饰
 @makeBold   # 下面不是函数，先暂停装饰，装饰好了makeItalic再回来
 @makeItalic
 def test():
@@ -1845,14 +2133,16 @@ def test():
 
 装饰2
 装饰1
->>> print(test())  # test = makeBold(makeItalic(test))
+>>> print(test())  # test = makeBold(makeItalic(test)) 在调用test()前，装饰已经完成
 执行1
 执行2
 <b><i>hello world</i></b>
 ```
->注意：函数被调用前，装饰器就已经装饰完毕，不是即时装饰
-- 被装饰函数有参数
-装饰器要填入参数匹配
+>注意：
+函数被调用前，装饰器就已经装饰完毕，不是即时装饰。装饰的时候就相当于把装饰操作调用了一遍，因此该打印的都打印了出来。打印的顺序和装饰的执行顺序有关。
+当装饰完成的函数被调用时，从最外层的装饰一层层往里执行，就像剥洋葱一样。
+
+- 被装饰函数有参数，装饰器要填入参数匹配
 ```python
 def de(func):
   def inn(a, b): # test1最终会指向inn的引用，inn需要接收test1的参数
@@ -1866,8 +2156,7 @@ def test1(a,b):
 >>> test1(5,5)
 5,5
 ```
-- 被装饰函数有不定长参数
-装饰器通用参数匹配
+- 被装饰函数有不定长参数，装饰器用通用参数匹配
 ```python
 def de(func):
   def inn(*args, **kwargs): # test1最终会指向inn的引用，inn需要接收test1的参数
@@ -1928,89 +2217,10 @@ def test1(a, b):
 >>> print(ret)
 None
 ```
-shell("xcgj")函数已经有一个参数了，不会再将下面的函数当作参数传入，而是先执行。执行完毕返回de函数，此时变成了@de，开始装饰
+`shell("xcgj")`函数已经有一个参数了，不会再将下面的函数当作参数传入，而是先执行。执行完毕返回`de`函数，此时变成了`@de`，开始装饰。
+带参数的装饰器，能够根据传入参数的不同，导致装饰的功能不同
 
-
-# LEGB规则
-变量查找顺序：局部-闭包-全局-内建
-locals -> enclosing function -> globals -> builtins
-`dir(__builtin__)`查看内建变量
-
-
-# type
-- 给对象添加方法
-```python
-import types
-
-class Clazz:
-  def __init__(self, name):
-    self.name = name
-
-def talk(self):
-  print("%slisten"%self.name)
-
-@staticmethod     #静态方法
-def look():
-  print("look")
-
-@classmethod      #类方法
-def eat(cls):
-  print("eateat")
-
-
->>> obj = Clazz("obj")
->>> obj.talk = types.MethodType(talk, obj) # 对象和函数绑定，添加方法
->>> obj.talk()
-objlisten
->>> ccc = types.MethodType(talk, obj)     # 函数引用
->>> ccc()
-objlisten
->>> Clazz.lo = look
->>> Clazz.lo()
-look
->>> Clazz.e = eat
->>> Clazz.e()
-eateat
-```
-```python
-class A:
-    a = 2
-    b = 5
-    c = 9
-    __d = 11
-
-    def __init__(self):
-        print self.a
-    def norma(self):
-        print self.b
-    @classmethod
-    def clsmd(cls):
-        print cls.c
-    @staticmethod
-    def sttmd():
-        print "static"
-
-x = A()
-x.norma()
-x.clsmd()
-x.sttmd()
-```
-
-# `__slots__`
-限制类实例能添加的属性
-```python
-class Clazz(object):
-  __slots__ = ("name", "age") # 只能创建name和age两个属性
-
->>> a = Clazz()
->>> a.name = "aa"
->>> a.age = 10
->>> a.a = 11
-Traceback (most recent call last):
-  File "<pyshell#39>", line 1, in <module>
-    a.a = 11
-AttributeError: 'Clazz' object has no attribute 'a'
-```
+# 垃圾回收机制
 
 # 数据库操作
 ```python
