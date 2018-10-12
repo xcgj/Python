@@ -42,6 +42,10 @@
     * [动态创建类](#动态创建类)
     * [type就是个元类](#type就是个元类)
     * [`__metaclass__`](#__metaclass__)
+        * [类的创建流程](#类的创建流程)
+        * [用函数自定义元类](#用函数自定义元类)
+        * [用类自定义元类](#用类自定义元类)
+    * [元类的意义](#元类的意义)
 * [继承](#继承)
 * [多态](#多态)
 * [异常](#异常)
@@ -1456,6 +1460,81 @@ Python中所有的东⻄都是对象，这包括整数、 字符串、 函数以
 ```
 
 ## `__metaclass__`
+`__metaclass__`的作用是在类创建之前将类作特定的修改，并返回修改后的类
+元类的主要目的就是为了当创建类时能够自动地改变类。通过在模块级别设定`__metaclass__`。采用这种方法，这个模块中的所有类都会通过这个元类来创建
+### 类的创建流程
+```python
+class Foo(Bar):
+    pass
+```
+- Foo中有`__metaclass__`这个属性吗？如果是，Python会通过`__metaclass__`创建一个名字为Foo的类(对象)
+- 如果Python没有找到`__metaclass__`，它会继续在Bar（父类）中寻找`__metaclass__`属性，并尝试做和前面同样的操作。
+- 如果Python在任何父类中都找不到`__metaclass__`，它就会在模块层次中去寻找`__metaclass__`，并尝试做同样的操作。
+- 如果还是找不到`__metaclass__`,Python就会用内置的type来创建这个类对象。
+### 用函数自定义元类
+`__metaclass__`实际上可以被任意调用，它并不需要是一个正式的类
+```python
+>>> def upper_attr(future_class_name, future_class_parents, future_class_attr):
+    """把不是__开头的属性名字变为大写"""
+    newAttr = {}
+    #遍历属性字典，把不是__开头的属性名字变为大写
+	for name,value in future_class_attr.items():
+		if not name.startswith("__"):
+			newAttr[name.upper()] = value
+	#调用type来创建一个类
+	return type(future_class_name, future_class_parents, newAttr)
+
+>>> class Foo(object, metaclass=upper_attr):
+	xcgj = "c01cpp"
+
+>>> hasattr(Foo, 'xcgj')
+False
+>>> hasattr(Foo, 'XCGJ')
+True
+```
+### 用类自定义元类
+```python
+>>> class UpperAttrMetaClass(type):
+        """把不是__开头的属性名字变为大写"""
+        # __new__ 是在__init__之前被调用的特殊方法
+        # __new__是用来创建对象并返回之的方法
+        # 而__init__只是用来将传入的参数初始化给对象
+        # 你很少用到__new__，除非你希望能够控制对象的创建
+        # 这里，创建的对象是类，我们希望能够自定义它，所以我们这里改写__new__
+        # 如果你希望的话，你也可以在__init__中做些事情
+        # 还有一些高级的用法会涉及到改写__call__特殊方法，但是我们这里不用
+	def __new__(cls, future_class_name, future_class_parents, future_class_attr):
+		newAttr = {}
+                #遍历属性字典，把不是__开头的属性名字变为大写
+		for name,value in future_class_attr.items():
+			if not name.startswith("__"):
+				newAttr[name.upper()] = value
+
+                # 方法1：通过'type'来做类对象的创建
+                # return type(future_class_name, future_class_parents, newAttr)
+                # 方法2：复用type.__new__方法
+                # 这就是基本的OOP编程，没什么魔法
+                # return type.__new__(cls, future_class_name, future_class_parents, newAttr)
+                # 方法3：使用super方法
+		return super(UpperAttrMetaClass, cls).__new__(cls, future_class_name, future_class_parents, newAttr)
+
+>>> class Foo(object, metaclass = UpperAttrMetaClass):
+	xcgj = "c01cpp"
+    #python2的用法
+    #class Foo(object):
+        #__metaclass__ = UpperAttrMetaClass
+        #xcgj = "c01cpp"
+
+>>> hasattr(Foo, 'xcgj')
+False
+>>> hasattr(Foo, 'XCGJ')
+True
+>>>
+```
+## 元类的意义
+1、拦截类的创建
+2、修改类
+3、返回修改之后的类
 
 #  继承
 子类的类名后面加上小括号，括号里带上父类的类名
@@ -2220,7 +2299,145 @@ None
 `shell("xcgj")`函数已经有一个参数了，不会再将下面的函数当作参数传入，而是先执行。执行完毕返回`de`函数，此时变成了`@de`，开始装饰。
 带参数的装饰器，能够根据传入参数的不同，导致装饰的功能不同
 
-# 垃圾回收机制
+# python内存管理
+## 对象共用规则
+__共用对象__：
+- [-5, 257) 这些整数(提前建立,引用计数为0时不会被回收)
+- 单个字母(提前建立,引用计数为0时不会被回收)
+- 不包含空格的字符串(即时建立，引用计数为0时被回收，intern机制)
+
+intern机制：假如有多个变量引用`xcgj`这个字符串，只占用一个`xcgj`所占的内存空间。靠引用计数去维护何时释放。
+```python
+>>> b = 1
+>>> id(b)
+1726858928
+>>> a = 1
+>>> id(a)
+1726858928
+>>> a = "a"
+>>> id(a)
+1889412312792
+>>> b = "a"
+>>> id(b)
+1889412312792
+>>> a = "xcgj"
+>>> id(a)
+1889443085536
+>>> b = "xcgj"
+>>> id(b)
+1889443085536
+```
+
+__不共用对象__：
+- [-5, 257) 范围以外的整数
+- 含有空格的字符串
+
+```python
+>>> a = 1000
+>>> id(a)
+1889442444944
+>>> b = 1000
+>>> id(b)
+1889442446128
+>>> a = "xcgj c01cpp"
+>>> id(a)
+1889443058608
+>>> b = "xcgj c01cpp"
+>>> id(b)
+1889443156400
+```
+
+## python垃圾回收机制
+python采用的是引用计数机制为主，标记-清除和分代收集两种机制为辅的策略
+
+### 引用计数
+python里每一个东西都是对象，它们的核心就是一个结构体：`PyObject`
+```C
+typedef struct_object
+{
+    int ob_refcnt;
+    struct_typeobject *ob_type;
+} PyObject;
+```
+```C++
+#define Py_INCREF(op)   ((op)->ob_refcnt++) //增加计数
+#define Py_DECREF(op) \ //减少计数
+    if (--(op)->ob_refcnt != 0) \
+        ; \
+    else \
+        __Py_Dealloc((PyObject *)(op))
+```
+__导致引用计数+1的情况__:
+- 对象被创建，例如a=23
+- 对象被引用，例如b=a
+- 对象被作为参数，传入到一个函数中，例如func(a)
+- 对象作为一个元素，存储在容器中，例如list1=[a,a]
+
+__导致引用计数-1的情况__:
+- 对象的别名被显式销毁，例如del a
+- 对象的别名被赋予新的对象，例如a=24
+- 一个对象离开它的作用域，例如f函数执行完毕时，func函数中的局部变量（全局变量不会）
+- 对象所在的容器被销毁，或从容器中删除对象
+
+__查看一个对象的引用计数__:
+```python
+>>> import sys
+>>> a = "xcgj"
+>>> sys.getrefcount(a)
+2
+```
+可以查看a对象的引用计数，但是比正常计数大1，因为调用函数的时候传入a，这会让a的引用计数+1
+
+__优点__:
+- 简单
+- 实时
+
+__缺点__：
+- 维护引用计数消耗资源
+- 循环引用导致内存泄露
+
+### 循环引用
+循环引用的情况
+```python
+class Clazz():
+	pass
+
+a = Clazz()
+b = Clazz()
+a.next = b
+b.prev = a
+del a
+del b
+```
+a和b的引用计数未清零，因为还有next和prev两个变量的引用
+
+### 分代回收
+python用gc(Garbage collection)模块进行垃圾回收，主要解决循环引用的问题。
+在Python中，采用分代收集的方法。把对象分为三代，一开始，对象在创建的时候，放在零代中，如果在一次零代的垃圾检查中，该对象存活下来，就会被放到一代中，同理在一次一代的垃圾检查中，该对象存活下来，就会被放到二代中。
+通过这种方法，代码所长期使用的对象、代码持续访问的活跃对象，会从零代链表转移到一代再转移到二代。通过不同的阈值设置，Python可以在不同的时间间隔处理这些对象。Python处理零代最为频繁，其次是一代然后才是二代。
+__gc常用函数__：
+|方法名|作用|
+|---|---|
+|gc.set_debug(flags)|设置gc的debug日志，一般设置为gc.DEBUG_LEAK|
+|gc.collect([generation]) |显式进行垃圾回收，可以输入参数，0代表只检查第零代的对象，1代表检查零，一代的对象，2代表检查零，一，二代的对象，如果不传参数，执行一个full collection，也就是等于传2。 返回不可达（unreachable objects）对象的数目|
+|gc.get_threshold()|获取的gc模块中自动执行垃圾回收的频率|
+|gc.set_threshold(threshold0[, threshold1[, threshold2]) |设置自动执行垃圾回收的频率|
+|gc.get_count()|获取当前自动执行垃圾回收的计数器，返回一个长度为3的列表|
+gc模快有一个自动垃圾回收的阀值，即通过gc.get_threshold函数获取到的长度为3的元组，例如(700,10,10) 每一次计数器的增加，gc模块就会检查增加后的计数是否达到阀值的数目，如果是，就会执行对应的代数的垃圾检查，然后重置计数器
+
+例如，假设阀值是(700,11,10)：
+```
+700是指距离上一次一代垃圾检查，Python分配内存的数目减去释放内存的数目，注意是内存分配，而不是引用计数的增加。
+11是指距离上一次一代垃圾检查，零代垃圾检查的次数。
+同理，10是指距离上一次二代垃圾检查，一代垃圾检查的次数。
+```
+```
+当计数器从(699,3,0)增加到(700,3,0)，gc模块就会执行gc.collect(0),即检查零代对象的垃圾，并重置计数器为(0,4,0)
+当计数器从(699,10,0)增加到(700,10,0)，gc模块就会执行gc.collect(1),即检查零、一代对象的垃圾，并重置计数器为(0,0,1)
+当计数器从(699,10,9)增加到(700,10,9)，gc模块就会执行gc.collect(2),即检查零、一、二代对象的垃圾，并重置计数器为(0,0,0)
+```
+>注意点
+gc模块唯一处理不了的是循环引用的类都有__del__方法，所以项目中要避免定义__del__方法
 
 # 数据库操作
 ```python
